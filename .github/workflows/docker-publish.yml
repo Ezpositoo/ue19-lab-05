@@ -1,6 +1,6 @@
 name: Build and Publish Docker Image
 
-# Le workflow sera déclenché sur chaque push sur la branche main
+# Le workflow sera déclenché sur chaque push sur la branche mains
 on:
   push:
     branches:
