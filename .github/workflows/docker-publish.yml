@@ -33,7 +33,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/flolev/ue19-lab-05
+          tags: ghcr.io/ezpositoo/ue19-lab-05
 
       - name: Scanner l'image Docker pour les vulnerabilites
         uses: aquasecurity/trivy-action@master # On utilise l'action "trivy" pour scanner l'image Docker
