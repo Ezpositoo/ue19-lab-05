@@ -1,0 +1,49 @@
+Pour configurer une GitHub Action qui build le conteneur et le publie sur GitHub Packages, voici les étapes à suivre :
+
+### 1. Créer un fichier de workflow GitHub Action
+Dans votre repository, créez un dossier `.github/workflows` et ajoutez un fichier `docker-publish.yml` avec le contenu suivant :
+
+```yaml
+name: Build and Publish Docker image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ghcr.io/${{ github.repository_owner }}/ue19-lab-05:latest
+```
+
+### 2. Ajouter le fichier au repository
+Ajoutez et commitez le fichier `docker-publish.yml` à votre repository, puis poussez les changements vers la branche `main`.
+
+### 3. Vérifier l'exécution de l'action
+Une fois les changements poussés, GitHub Actions devrait automatiquement exécuter le workflow. Vous pouvez vérifier l'exécution dans l'onglet "Actions" de votre repository GitHub.
+
+### 4. Lien vers l'exécution réussie de l'action
+Après avoir configuré et exécuté l'action avec succès, vous pouvez partager le lien vers l'exécution réussie de l'action. Ce lien se trouve dans l'onglet "Actions" de votre repository, sous la section du workflow que vous avez configuré.
+
+Si tu rencontres des difficultés ou si tu as des questions supplémentaires, n'hésite pas à demander ! 😊
