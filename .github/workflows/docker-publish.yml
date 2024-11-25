@@ -36,7 +36,8 @@ jobs:
         with:
           images: |
             my-docker-hub-namespace/my-docker-hub-repository
-            ghcr.io/${{ github.repository }}
+            ghcr.io/${{ github.repository | toLowerCase() }}
+
 
       - name: Build and push Docker images
         id: push
