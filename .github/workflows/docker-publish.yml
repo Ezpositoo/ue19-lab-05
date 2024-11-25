@@ -22,8 +22,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}  # Utilise ton nom d'utilisateur GitHub
-        password: ${{ secrets.GITHUB_TOKEN }}  # Utilise le jeton GitHub pour l'authentification
-
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}  
     - name: Build Docker image
       run: |
         docker build -t ghcr.io/mvslm/ue19-lab-05:latest . 
