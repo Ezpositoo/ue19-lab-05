@@ -9,10 +9,11 @@ on:
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
+
     permissions:
-      packages: write   # Permet à GitHub Actions d'écrire sur le registre
-      contents: read    # Permet de lire les fichiers du dépôt
-      id-token: write   # Nécessaire pour l'authentification avec GitHub Packages
+      packages: write    # Permet à GitHub Actions d'écrire sur le registre
+      contents: read     # Permet de lire les fichiers du dépôt
+      id-token: write    # Nécessaire pour l'authentification avec GitHub Packages
 
     steps:
       - name: Check out repository
