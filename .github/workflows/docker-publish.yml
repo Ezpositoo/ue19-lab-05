@@ -1,49 +1,49 @@
 name: Build and Publish Docker Image
 
-# Le workflow sera déclenché sur chaque push sur la branche mains
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write  # Ensure this is set to allow writing to the registry
+
 jobs:
-  build_and_publish:
+  build:
     runs-on: ubuntu-latest
 
-    permissions:
-      packages: write    # Permet à GitHub Actions d'écrire sur le registre
-      contents: read     # Permet de lire les fichiers du dépôt
-      id-token: write    # Nécessaire pour l'authentification avec GitHub Packages
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        # Cette étape clone ton dépôt dans le workflow pour pouvoir y accéder
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Log in to GitHub Package Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io           # Utilisation du registre GitHub Packages
-          username: ${{ github.actor }}  # Utilisation de l'utilisateur actuel de GitHub
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ github.repository }}  # Nom de l'image, par défaut le nom du dépôt
+    - name: Build Docker image
+      run: |
+        docker build -t ghcr.io/mvslm/ue19-lab-05:latest .
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .                 # Contexte de la build (répertoire courant)
-          file: ./Dockerfile         # Fichier Dockerfile à utiliser pour la build
-          push: true                 # Déclenche le push de l'image vers le registre
-          tags: ${{ steps.meta.outputs.tags }}  # Utilise les tags définis dans l'étape précédente
+    - name: Cache Trivy binary
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/trivy
+        key: ${{ runner.os }}-trivy-${{ hashFiles('**/Dockerfile') }}
+        restore-keys: |
+          ${{ runner.os }}-trivy-
 
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-name: ghcr.io/${{ github.repository }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true   # Attestation d'artefact pour sécuriser la chaîne de construction
+    - name: Scan image for vulnerabilities
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ghcr.io/mvslm/ue19-lab-05:latest
+        format: table
+        severity: HIGH,CRITICAL
+
+    - name: Push Docker image
+      if: success()
+      run: |
+        docker push ghcr.io/mvslm/ue19-lab-05:latest
