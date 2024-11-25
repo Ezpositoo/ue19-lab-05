@@ -1,4 +1,4 @@
-name: Construire le conteneur et le publier sur le registre GitHub Packages
+name: Builder le conteneur et le publier sur le registre GitHub Packages
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Construire le conteneur et le publier sur le registre GitHub Packages
+      - name: Builder le conteneur et le publier sur le registre GitHub Packages
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -36,6 +36,6 @@ jobs:
           tags: ghcr.io/ezpositoo/ue19-lab-05
 
       - name: Scanner l'image Docker pour les vulnerabilites
-        uses: aquasecurity/trivy-action@master # On utilise l'action "trivy" pour scanner l'image Docker
+        uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/ezpositoo/ue19-lab-05
